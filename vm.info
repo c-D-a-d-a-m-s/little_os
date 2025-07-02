@@ -1,5 +1,9 @@
 ### Below are notes on how I successfully spun up a vm running little_os:
 
+Before running the little_os in a vm, build the __ little_os.qcow2 __ file:
+    
+    qemu-img create -f qcow2 little_os.qcow2 16G
+
 The following command will run the little_os in a vm:
 
     qemu-system-i386 -monitor stdio -enable-kvm -m 2048 -nic user,model=virtio -drive file=little_os.qcow2,media=disk,if=virtio -cdrom os.iso

@@ -1,0 +1,17 @@
+### Below are notes on how I successfully spun up a vm running little_os:
+
+The following command will run the little_os in a vm:
+
+    qemu-system-i386 -monitor stdio -enable-kvm -m 2048 -nic user,model=virtio -drive file=little_os.qcow2,media=disk,if=virtio -cdrom os.iso
+
+While running the vm, entering the following command in the terminal will show the current state of the registers on the vm:
+
+    info registers
+
+### SOFTWARE VERSIONS USED
+Ubuntu 24.04.2 LTS
+qemu 8.2.2
+
+**********************************************
+DATE: 2025-06-02
+AUTHOR: Christopher Adams

@@ -1,4 +1,5 @@
 global loader                   ; the entry symbol for ELF
+extern main                     ; main function in kmain.c
 
 MAGIC_NUMBER equ 0x1BADB002     ; define the magic number constant
 FLAGS        equ 0x0            ; multiboot flags
@@ -22,6 +23,7 @@ loader:                         ; the loader label (defined as entry point in li
     mov eax, 0xCAFEBABE         ; place the number 0xCAFEBABE in the register eax
     mov esp, kernel_stack + KERNEL_STACK_SIZE       ; point esp to the start of the
                                                     ; stack (end of memory area)
+    call main                                       ; call main function in kmain.c
 
 .loop:
     jmp .loop                   ; loop forever

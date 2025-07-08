@@ -1,7 +1,8 @@
 OBJECTS = loader.o       \
           kmain.o        \
 		  io.o           \
-		  frame_buffer.o
+		  frame_buffer.o \
+		  serial.o
 CC = gcc
 CFLAGS = -m32 -nostdlib -nostdinc -fno-builtin -fno-stack-protector \
 			-nostartfiles -nodefaultlibs -Wall -Wextra -Werror -c
@@ -28,8 +29,13 @@ os.iso: kernel.elf
 				iso
 
 run: os.iso
-	qemu-system-i386 -monitor stdio -enable-kvm -m 2048 -nic \
-	user,model=virtio -drive file=little_os.qcow2,media=disk,if=virtio -cdrom os.iso
+	qemu-system-i386 -monitor stdio                                   \
+					 -enable-kvm                                      \
+					 -m 2048                                          \
+					 -nic user,model=virtio                           \
+					 -serial file:serial.log                          \
+					 -drive file=little_os.qcow2,media=disk,if=virtio \
+					 -cdrom os.iso
 
 %.o: %.c
 	$(CC) $(CFLAGS)  $< -o $@

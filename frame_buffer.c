@@ -41,18 +41,46 @@ void fb_move_cursor(unsigned short pos) {
     outb(FB_DATA_PORT,    pos & 0x00FF);
 }
 
+int fb_get_cursor_position(void)
+{
+    int pos = 0;
+    outb(FB_COMMAND_PORT, 0x0F);
+    pos |= inb(FB_DATA_PORT);
+    outb(FB_COMMAND_PORT, 0x0E);
+    pos |= ((int)inb(FB_DATA_PORT)) << 8;
+    return pos;
+}
+
 int fb_clear(void) {
     for (unsigned int i = 0; i < FB_ROWS * FB_COLUMNS; i++) {
-        fb_write_cell(2 * i, ' ', FB_DEFAULT_FG, FB_DEFAULT_BG);
+        fb_write_cell(2 * i, '\0', FB_DEFAULT_FG, FB_DEFAULT_BG);
         fb_move_cursor(0);
     }
     return 0;
 }
 
-int fb_write(char *buf, unsigned int len) {
+void fb_write(char *buf, unsigned int len) {
+    int pos = fb_get_cursor_position();
     for (unsigned int i = 0; i < len; i++) {
-        fb_write_cell(2 * i, buf[i], FB_DEFAULT_FG, FB_DEFAULT_BG);
-        fb_move_cursor(i + 1);
+        if (buf[i] == '\n' && pos / FB_COLUMNS != FB_ROWS - 1) {
+            pos = FB_COLUMNS * ( pos / FB_COLUMNS + 1);
+            fb_move_cursor(pos);
+            continue;
+        }
+        if (buf[i] == '\n') {
+            for (unsigned int j = 0; j < FB_COLUMNS * (FB_ROWS - 1); j++) {
+                fb_write_cell(2 * j, *(FB_MMIO_ADDR + 2 * (FB_COLUMNS + j)), FB_DEFAULT_FG, FB_DEFAULT_BG);
+            }
+            for (unsigned int j = FB_COLUMNS * (FB_ROWS - 1); j < FB_COLUMNS * FB_ROWS; j++) {
+                fb_write_cell(2 * j, '\0', FB_DEFAULT_FG, FB_DEFAULT_BG);
+            }
+            pos = FB_COLUMNS * (FB_ROWS - 1);
+            fb_move_cursor(pos);
+            continue;
+        }
+        fb_write_cell(2 * pos, buf[i], FB_DEFAULT_FG, FB_DEFAULT_BG);
+        pos++;
+        fb_move_cursor(pos);
     }
     return 0;
 }

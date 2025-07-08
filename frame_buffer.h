@@ -25,12 +25,17 @@ void fb_move_cursor(unsigned short pos);
  */
 int fb_clear(void);
 
+/** fb_get_cursor_position:
+ *  Gets the current position of the cursor.
+ */
+int fb_get_cursor_position(void);
+
 /** fb_write:
  *  Writes to the display.
  * 
  *  @param buf The character buffer
  *  @param len The size of the buffer
  */
-int fb_write(char *buf, unsigned int len);
+void fb_write(char *buf, unsigned int len);
 
 #endif /* INCLUDE_FRAME_BUFFER */
